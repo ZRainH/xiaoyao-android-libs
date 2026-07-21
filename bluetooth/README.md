@@ -116,7 +116,7 @@ dependencyResolutionManagement {
         google()
         mavenCentral()
         maven {
-            url = uri("https://maven.pkg.github.com/OWNER/REPO")
+            url = uri("https://maven.pkg.github.com/ZRainH/AndroidBluetooth")
             credentials {
                 username = providers.gradleProperty("gpr.user").orNull ?: System.getenv("GITHUB_ACTOR")
                 password = providers.gradleProperty("gpr.key").orNull ?: System.getenv("GITHUB_TOKEN")
@@ -132,7 +132,9 @@ dependencies {
 }
 ```
 
-> GitHub Packages 的 Maven 地址格式固定为：`https://maven.pkg.github.com/{owner}/{repo}`。包会绑定到该仓库下，可在 GitHub 仓库页面的 **Packages** 中查看。
+> GitHub Packages 地址：`https://maven.pkg.github.com/ZRainH/AndroidBluetooth`  
+> Release / AAR：https://github.com/ZRainH/AndroidBluetooth/releases  
+> 包会绑定到该仓库下，可在 GitHub 仓库页面的 **Packages** 中查看。
 
 ### 1.2 权限
 
