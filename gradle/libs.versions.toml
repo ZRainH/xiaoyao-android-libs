@@ -76,6 +76,7 @@ xxpermissions = "23.0"
 androidautosize = "v1.2.1"
 zxingV = "1.3.8"
 agentwebCore = "v5.1.1-androidx"
+mavenPublish = "0.31.0"
 
 # Test
 junit = "4.13.2"
@@ -225,3 +226,4 @@ android-library = { id = "com.android.library", version.ref = "agp" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 mob-sdk = { id = "com.mob.sdk", version.ref = "mobSdk" }
 google-services = { id = "com.google.gms.google-services", version.ref = "googleServices" }
+vanniktech-maven-publish = { id = "com.vanniktech.maven.publish", version.ref = "mavenPublish" }

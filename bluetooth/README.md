@@ -12,7 +12,17 @@
 
 ### 1.1 依赖
 
-**方式 A：模块依赖（同工程开发）**
+**方式 A：Maven Central（推荐，无需 Token）**
+
+```kotlin
+dependencies {
+    implementation("io.github.zrainh:bluetooth:1.0.0")
+}
+```
+
+工程已配置 `mavenCentral()` 即可。首次发布后同步可能需要 10–30 分钟。
+
+**方式 B：模块依赖（同工程开发）**
 
 在 App 的 `build.gradle.kts` 中：
 
@@ -28,113 +38,40 @@ dependencies {
 include(":bluetooth")
 ```
 
-**方式 B：本地 Maven 仓库（AAR 发布）**
-
-1. 发布到本地仓库：
+**方式 C：本地 Maven 仓库**
 
 ```powershell
 .\gradlew :bluetooth:publishReleasePublicationToLocalRepository
 ```
 
-产物目录：`local-maven-repo/cn/xiaoyao/bluetooth/1.0.0/`
-
-2. 在其他工程的 `settings.gradle.kts` 中添加仓库：
+然后：
 
 ```kotlin
-dependencyResolutionManagement {
-    repositories {
-        google()
-        mavenCentral()
-        maven { url = uri("${rootProject.projectDir}/local-maven-repo") }
-    }
-}
+implementation("io.github.zrainh:bluetooth:1.0.0")
 ```
 
-3. 在 App 的 `build.gradle.kts` 中引用：
-
-```kotlin
-dependencies {
-    implementation("cn.xiaoyao:bluetooth:1.0.0")
-}
-```
-
-**方式 C：直接引用 AAR 文件**
+**方式 D：直接引用 AAR**
 
 ```powershell
 .\gradlew :bluetooth:assembleRelease
 ```
 
-将 `bluetooth/build/outputs/aar/bluetooth-release.aar` 复制到目标工程 `libs/`，然后：
+将 `bluetooth/build/outputs/aar/bluetooth-release.aar` 复制到目标工程 `libs/`：
 
 ```kotlin
-dependencies {
-    implementation(files("libs/bluetooth-release.aar"))
-}
+implementation(files("libs/bluetooth-release.aar"))
 ```
 
-> Maven 方式会自动生成 POM 依赖声明，比直接拷贝 AAR 更方便。
+**方式 E：GitHub Packages（需登录）**
 
-**方式 D：GitHub Packages（远程发布）**
-
-1. 创建 GitHub Personal Access Token（Classic）  
-   权限至少勾选：`write:packages`、`read:packages`；私有仓库还需 `repo`。
-
-2. 在项目根目录配置非敏感信息（`gradle.properties`）：
-
-```properties
-gpr.user=ZRainH
-gpr.repo.owner=ZRainH
-gpr.repo.name=AndroidBluetooth
-```
-
-Token 放到用户目录（**不要提交到 Git**）：
-
-`%USERPROFILE%\.gradle\gradle.properties`
-
-```properties
-gpr.key=ghp_xxxxxxxxxxxxxxxxxxxx
-```
-
-也可使用环境变量（CI 推荐）：
-
-- `GITHUB_ACTOR`：GitHub 用户名
-- `GITHUB_TOKEN`：PAT
-- `GPR_REPO_OWNER`：仓库 owner
-- `GPR_REPO_NAME`：仓库名
-
-3. 发布到 GitHub Packages：
+发布：
 
 ```powershell
 .\gradlew :bluetooth:publishReleasePublicationToGitHubPackagesRepository
 ```
 
-4. 在其他工程中引用（`settings.gradle.kts`）：
-
-```kotlin
-dependencyResolutionManagement {
-    repositories {
-        google()
-        mavenCentral()
-        maven {
-            url = uri("https://maven.pkg.github.com/ZRainH/AndroidBluetooth")
-            credentials {
-                username = providers.gradleProperty("gpr.user").orNull ?: System.getenv("GITHUB_ACTOR")
-                password = providers.gradleProperty("gpr.key").orNull ?: System.getenv("GITHUB_TOKEN")
-            }
-        }
-    }
-}
-```
-
-```kotlin
-dependencies {
-    implementation("cn.xiaoyao:bluetooth:1.0.0")
-}
-```
-
-> GitHub Packages 地址：`https://maven.pkg.github.com/ZRainH/AndroidBluetooth`  
-> Release / AAR：https://github.com/ZRainH/AndroidBluetooth/releases  
-> 包会绑定到该仓库下，可在 GitHub 仓库页面的 **Packages** 中查看。
+引用时需配置带凭证的仓库：`https://maven.pkg.github.com/ZRainH/AndroidBluetooth`  
+（详见根目录 [README.md](../README.md)）
 
 ### 1.2 权限
 

@@ -1,9 +1,11 @@
+import com.vanniktech.maven.publish.AndroidSingleVariantLibrary
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
-    `maven-publish`
+    alias(libs.plugins.vanniktech.maven.publish)
+    signing
 }
 
 val bluetoothVersion = "1.0.0"
@@ -44,11 +46,6 @@ android {
             jvmTarget = JvmTarget.fromTarget("11")
         }
     }
-    publishing {
-        singleVariant("release") {
-            withSourcesJar()
-        }
-    }
     sourceSets {
         getByName("main") {
             res {
@@ -59,7 +56,6 @@ android {
 }
 
 dependencies {
-
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
@@ -70,22 +66,51 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
 }
 
-afterEvaluate {
-    publishing {
-        publications {
-            register<MavenPublication>("release") {
-                groupId = "cn.xiaoyao"
-                artifactId = "bluetooth"
-                version = bluetoothVersion
+mavenPublishing {
+    // 通过 gradle.properties 的 SONATYPE_HOST=CENTRAL_PORTAL 启用 Central Portal
+    signAllPublications()
 
-                from(components["release"])
+    // 坐标：需与 Central 已验证的 namespace 一致
+    coordinates("io.github.zrainh", "bluetooth", bluetoothVersion)
 
-                pom {
-                    name.set("Bluetooth BLE Library")
-                    description.set("Multi-device BLE library with auto-connect and protocol parsing")
-                }
+    // javadoc 由插件生成（Android 下多为空 jar，满足 Central 要求）
+    configure(AndroidSingleVariantLibrary(variant = "release", sourcesJar = true, publishJavadocJar = true))
+
+    pom {
+        name.set("Bluetooth BLE Library")
+        description.set("Multi-device BLE library with auto-connect and protocol parsing")
+        inceptionYear.set("2026")
+        url.set("https://github.com/ZRainH/AndroidBluetooth")
+        licenses {
+            license {
+                name.set("The Apache License, Version 2.0")
+                url.set("https://www.apache.org/licenses/LICENSE-2.0.txt")
+                distribution.set("repo")
             }
         }
+        developers {
+            developer {
+                id.set("ZRainH")
+                name.set("逍遥")
+                url.set("https://github.com/ZRainH")
+            }
+        }
+        scm {
+            url.set("https://github.com/ZRainH/AndroidBluetooth")
+            connection.set("scm:git:git://github.com/ZRainH/AndroidBluetooth.git")
+            developerConnection.set("scm:git:ssh://git@github.com/ZRainH/AndroidBluetooth.git")
+        }
+    }
+}
+
+// 现代 GPG 无 secring.gpg，改用 gpg 命令行签名
+extensions.configure<org.gradle.plugins.signing.SigningExtension>("signing") {
+    useGpgCmd()
+}
+
+// 可选：继续发布到本地 / GitHub Packages
+afterEvaluate {
+    publishing {
         repositories {
             maven {
                 name = "local"
@@ -93,7 +118,6 @@ afterEvaluate {
             }
             val githubOwner = resolveConfig("gpr.repo.owner", "GPR_REPO_OWNER")
             val githubRepo = resolveConfig("gpr.repo.name", "GPR_REPO_NAME")
-            logger.lifecycle("GitHub Packages config: owner=$githubOwner, repo=$githubRepo")
             if (!githubOwner.isNullOrBlank() && !githubRepo.isNullOrBlank()) {
                 maven {
                     name = "GitHubPackages"

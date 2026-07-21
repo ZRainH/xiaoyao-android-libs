@@ -9,6 +9,9 @@
 .cxx
 local.properties
 /local-maven-repo/
+# 含真实 Token/密码的本机发布手册，禁止提交
+PUBLISH.md
+**/PUBLISH-CREDENTIALS.md
 *.apk
 *.aab
 *.keystore

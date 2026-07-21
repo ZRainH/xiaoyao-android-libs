@@ -1,57 +1,24 @@
 # AndroidBluetooth
 
-多设备 BLE 库（`cn.xiaoyao.bluetooth`），支持连接管理、扫连自动重连、指令收发与可插拔协议解析。
+多设备 BLE 库，支持连接管理、扫连自动重连、指令收发与可插拔协议解析。
 
-- **最新版本**：`1.0.0`
-- **Maven 坐标**：`cn.xiaoyao:bluetooth:1.0.0`
-- **命名空间**：`cn.xiaoyao.bluetooth`
-- **Release**：https://github.com/ZRainH/AndroidBluetooth/releases/tag/v1.0.0
-- **详细文档**：[bluetooth/README.md](bluetooth/README.md)
+- **版本**：`1.0.0`
+- **坐标**：`io.github.zrainh:bluetooth`
+- **包名**：`cn.xiaoyao.bluetooth`
 
 ---
 
-## 快速接入（推荐：GitHub Packages）
-
-### 1. 配置仓库
-
-在目标工程的 `settings.gradle.kts` 中：
-
-```kotlin
-dependencyResolutionManagement {
-    repositories {
-        google()
-        mavenCentral()
-        maven {
-            url = uri("https://maven.pkg.github.com/ZRainH/AndroidBluetooth")
-            credentials {
-                username = providers.gradleProperty("gpr.user").orNull
-                    ?: System.getenv("GITHUB_ACTOR")
-                password = providers.gradleProperty("gpr.key").orNull
-                    ?: System.getenv("GITHUB_TOKEN")
-            }
-        }
-    }
-}
-```
-
-在用户目录 `%USERPROFILE%\.gradle\gradle.properties` 中配置（**不要提交到 Git**）：
-
-```properties
-gpr.user=你的GitHub用户名
-gpr.key=ghp_xxxxxxxxxxxxxxxxxxxx
-```
-
-Token 至少需要 `read:packages`；若仓库为私有，还需 `repo`。
-
-### 2. 添加依赖
+## 依赖
 
 ```kotlin
 dependencies {
-    implementation("cn.xiaoyao:bluetooth:1.0.0")
+    implementation("io.github.zrainh:bluetooth:1.0.0")
 }
 ```
 
-### 3. 申请权限
+仓库需包含 `mavenCentral()`。
+
+### 权限
 
 模块已声明蓝牙权限，业务侧仍需运行时申请（Android 12+）：
 
@@ -61,41 +28,18 @@ dependencies {
 
 ---
 
-## 其他接入方式
+## 使用说明
 
-### 下载 Release AAR
-
-1. 打开：https://github.com/ZRainH/AndroidBluetooth/releases  
-2. 下载 `bluetooth-release.aar` 到工程 `libs/`  
-3. 依赖：
-
-```kotlin
-dependencies {
-    implementation(files("libs/bluetooth-release.aar"))
-}
-```
-
-> 直接引用 AAR 时，需自行补充库的传递依赖（如 `androidx.core:core-ktx`、`lifecycle` 等）。更推荐用 GitHub Packages。
-
-### 同工程模块依赖
-
-```kotlin
-// settings.gradle.kts
-include(":bluetooth")
-
-// app/build.gradle.kts
-implementation(project(":bluetooth"))
-```
-
----
-
-## 快速开始
+### 初始化
 
 ```kotlin
 val connectionManager = BleConnectionManager.getInstance(context)
 val autoConnectManager = BleAutoConnectManager.create(context)
+```
 
-// 配置服务 / 特征后连接
+### 配置服务与特征
+
+```kotlin
 val profiles = listOf(
     BleServiceProfile(
         serviceUuid = serviceUuid,
@@ -106,7 +50,11 @@ val profiles = listOf(
         serviceInterpreter = MyServiceInterpreter()
     )
 )
+```
 
+### 手动连接
+
+```kotlin
 lifecycleScope.launch {
     val device = connectionManager
         .getBluetoothDeviceByMacNoScan("AA:BB:CC:DD:EE:FF")
@@ -119,76 +67,96 @@ lifecycleScope.launch {
     )
 
     if (connection.connectAsync().isSuccess) {
-        // 发送指令
-        connectionManager.sendCommandSync(
-            deviceAddress = device.address,
-            characteristicUuid = writeUuid,
-            data = myCommand
-        )
+        // 已连接
     }
 }
 ```
 
-自动连接（多设备常驻）：
+### 自动连接（多设备推荐）
 
 ```kotlin
 autoConnectManager.addAutoConnectDevice(
     address = "AA:BB:CC:DD:EE:FF",
     name = "设备A",
     serviceProfiles = profiles,
-    connectMode = ConnectMode.AUTO_RECONNECT
+    priority = 5,
+    connectMode = ConnectMode.AUTO_RECONNECT,
+    maxRetryCount = 5,
+    isPermanentlyEnabled = true
 )
 
 lifecycleScope.launch {
-    autoConnectManager.autoConnectStates.collect { /* Scanning / Connecting / Connected */ }
+    autoConnectManager.autoConnectStates.collect { map ->
+        // Disabled / Waiting / Scanning / Connecting / Connected / Failed / Retrying
+    }
 }
 ```
 
-进入手动配网页时，记得让后台扫连让路：
+进入手动搜索 / 连接页时，让后台扫连让路：
 
 ```kotlin
 autoConnectManager.pauseAllForManualOperation()
-// ... 手动扫描 / 连接 ...
+// 退出手动页后再恢复
 autoConnectManager.resumeAllFromManualOperation()
 ```
 
----
+### 指令收发
 
-## 模块结构
+```kotlin
+lifecycleScope.launch {
+    // 同步发送并等待响应（按 messageId 匹配）
+    connectionManager.sendCommandSync(
+        deviceAddress = address,
+        characteristicUuid = writeUuid,
+        data = myCommand,
+        timeoutMillis = 5000L
+    ).onSuccess { message ->
+        // message.data / message.rawBytes
+    }
 
-| 包 | 职责 |
-|----|------|
-| `autoconnect` | 扫连结合、自动重连、前台让路 |
-| `manager` | 多设备连接池、扫描、指令收发 |
-| `connection` | 单设备 GATT |
-| `protocol` | 组包 / 解包 / messageId |
-| `model` | 状态与配置模型 |
-| `exception` | 异常与错误码 |
-| `util` | 工具扩展 |
+    // 无响应写入
+    connectionManager.sendCommandSyncNoResponse(
+        deviceAddress = address,
+        characteristicUuid = writeUuid,
+        data = byteArrayOf(0x01, 0x02)
+    )
+}
+```
 
----
+监听设备主动推送与连接状态：
 
-## 发布维护（作者）
+```kotlin
+lifecycleScope.launch {
+    connectionManager.devicePushMessages.collect { /* 无匹配 messageId 的 Notify */ }
+}
+lifecycleScope.launch {
+    connectionManager.connectionStates.collect { /* 连接状态变化 */ }
+}
+```
 
-```powershell
-# 1. 修改版本号：bluetooth/build.gradle.kts 中 bluetoothVersion
-# 2. 发布到 GitHub Packages
-.\gradlew :bluetooth:publishReleasePublicationToGitHubPackagesRepository
+### 自定义协议
 
-# 3. 打包 AAR 并创建 Release
-.\gradlew :bluetooth:assembleRelease
-git tag v1.0.1
-git push origin v1.0.1
-gh release create v1.0.1 `
-  "bluetooth\build\outputs\aar\bluetooth-release.aar#bluetooth-release.aar" `
-  --title "v1.0.1" `
-  --notes "更新说明"
+实现 `ServiceInterpreter`，负责组包、解包与 `messageId` 匹配：
+
+```kotlin
+class MyServiceInterpreter : ServiceInterpreter {
+    override fun generate(data: Any): ByteArray { /* 对象 → 字节 */ }
+    override fun parse(raw: ByteArray): Any? { /* 字节 → 对象 */ }
+    override fun generateMessageId(data: Any): String? { /* 发送侧 id */ }
+    override fun generateMessageIdFromResponse(raw: ByteArray): String? { /* 响应侧 id */ }
+}
+```
+
+### 断开连接
+
+```kotlin
+lifecycleScope.launch {
+    connectionManager.disconnectDevice(address)
+    // connectionManager.disconnectByTag("racket")
+    // connectionManager.disconnectAll()
+}
 ```
 
 ---
 
-## 更多文档
-
-完整 API、协议自定义、常见问题与排错说明见：
-
-**[bluetooth/README.md](bluetooth/README.md)**
+更完整的 API、错误码与排错说明见 [bluetooth/README.md](bluetooth/README.md)。
