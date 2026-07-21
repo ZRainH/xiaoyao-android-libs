@@ -1,0 +1,8 @@
+# 复制为 gradle.properties 并填写（勿提交 Token）
+# 或在用户目录 ~/.gradle/gradle.properties 中配置
+
+# GitHub Packages 发布
+gpr.user=你的GitHub用户名
+# gpr.key 请放到 %USERPROFILE%\.gradle\gradle.properties，不要写进项目
+gpr.repo.owner=你的GitHub用户名或组织名
+gpr.repo.name=你的仓库名

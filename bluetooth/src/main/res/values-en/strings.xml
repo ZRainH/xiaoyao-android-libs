@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="s_device_no_connect">The device is not connected</string>
+    <string name="s_response_timeout">Response timeout</string>
+    <string name="s_service_config_not_found">Service configuration not found</string>
+    <string name="s_bluetooth_permission_required">Bluetooth permission required</string>
+    <string name="s_send_command_failed">Send command failed</string>
+    <string name="s_other_error">Other error</string>
+</resources>

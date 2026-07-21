@@ -1,0 +1,227 @@
+[versions]
+# SDK Versions
+compileSdk = "36"
+minSdk = "26"
+targetSdk = "35"
+
+# Build Tools & Plugins
+agp = "8.9.1"
+kotlin = "2.2.0"
+googleServices = "4.3.14"
+mobSdk = "+"
+
+# AndroidX
+coreKtx = "1.13.1"
+appcompat = "1.6.1"
+material = "1.10.0"
+activity = "1.8.0"
+constraintlayout = "2.1.4"
+fragmentKtx = "1.5.6"
+coreSplashscreen = "1.0.0"
+legacySupportV4 = "1.0.0"
+
+# Lifecycle & Architecture
+lifecycleRuntimeKtx = "2.9.0"
+lifecycleExtensions = "2.2.0"
+lifecycleLivedataKtx = "2.6.1"
+roomVersion = "2.7.1"
+workRuntimeKtx = "2.10.1"
+datastore = "1.1.7"
+navigation = "2.9.0"
+startup = "1.2.0"
+
+# Compose
+composeVersion = "1.5.1"
+
+# CameraX
+cameraCore = "1.4.2"
+cameraVersion = "1.3.1"
+
+# Google Services & ML Kit
+barcodeScanning = "17.3.0"
+playServicesAuth = "21.4.0"
+playServicesMlkitBarcodeScanning = "18.3.1"
+
+# Network & Data
+retrofit = "3.0.0"
+okhttp = "4.12.0"
+retrofit2KotlinCoroutinesAdapter = "0.9.2"
+eventbus = "3.3.1"
+kotlinCsvJvm = "1.10.0"
+
+# Image & Video
+glide = "4.16.0"
+glideTransformations = "4.3.0"
+fresco = "3.6.0"
+gsyvideoplayerVersion = "13.0.0"
+compress = "v3.11.2"
+
+# UI Components
+banner = "2.2.3"
+xpopup = "2.10.0"
+circleprogress = "1.2.4"
+blurview = "version-3.2.0"
+flexbox = "3.0.0"
+floatingx = "2.3.5"
+expandabletextview = "v1.6.1"
+baserecyclerviewadapterhelper4 = "4.3.2"
+ultimatebarx = "v0.8.1"
+refreshLayoutKernel = "3.0.0-alpha"
+refreshHeaderMaterial = "3.0.0-alpha"
+refreshFooterClassics = "3.0.0-alpha"
+
+# Utilities
+utilcodex = "1.31.1"
+xxpermissions = "23.0"
+androidautosize = "v1.2.1"
+zxingV = "1.3.8"
+agentwebCore = "v5.1.1-androidx"
+
+# Test
+junit = "4.13.2"
+junitVersion = "1.1.5"
+espressoCore = "3.5.1"
+activityKtx = "1.13.0"
+
+[libraries]
+# AndroidX
+androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
+material = { group = "com.google.android.material", name = "material", version.ref = "material" }
+androidx-activity = { group = "androidx.activity", name = "activity", version.ref = "activity" }
+androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
+androidx-fragment-ktx = { group = "androidx.fragment", name = "fragment-ktx", version.ref = "fragmentKtx" }
+androidx-core-splashscreen = { module = "androidx.core:core-splashscreen", version.ref = "coreSplashscreen" }
+androidx-legacy-support-v4 = { group = "androidx.legacy", name = "legacy-support-v4", version.ref = "legacySupportV4" }
+
+# Lifecycle
+androidx-lifecycle-runtime-ktx = { module = "androidx.lifecycle:lifecycle-runtime-ktx", version.ref = "lifecycleRuntimeKtx" }
+androidx-lifecycle-viewmodel-ktx = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "lifecycleRuntimeKtx" }
+androidx-lifecycle-livedata-ktx = { group = "androidx.lifecycle", name = "lifecycle-livedata-ktx", version.ref = "lifecycleLivedataKtx" }
+androidx-lifecycle-common-java8 = { module = "androidx.lifecycle:lifecycle-common-java8", version.ref = "lifecycleRuntimeKtx" }
+androidx-lifecycle-extensions = { module = "androidx.lifecycle:lifecycle-extensions", version.ref = "lifecycleExtensions" }
+androidx-lifecycle-runtime = { module = "androidx.lifecycle:lifecycle-runtime", version.ref = "lifecycleRuntimeKtx" }
+
+# Room
+room-runtime = { module = "androidx.room:room-runtime", version.ref = "roomVersion" }
+room-ktx = { module = "androidx.room:room-ktx", version.ref = "roomVersion" }
+room-compiler = { module = "androidx.room:room-compiler", version.ref = "roomVersion" }
+
+# Jetpack Other
+androidx-work-runtime-ktx = { module = "androidx.work:work-runtime-ktx", version.ref = "workRuntimeKtx" }
+datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastore" }
+startup = { module = "androidx.startup:startup-runtime", version.ref = "startup" }
+
+# Navigation
+androidx-navigation-fragment = { module = "androidx.navigation:navigation-fragment", version.ref = "navigation" }
+androidx-navigation-ui = { module = "androidx.navigation:navigation-ui", version.ref = "navigation" }
+androidx-navigation-dynamic-features-fragment = { module = "androidx.navigation:navigation-dynamic-features-fragment", version.ref = "navigation" }
+
+# CameraX
+camera-core = { module = "androidx.camera:camera-core", version.ref = "cameraVersion" }
+camera-camera2 = { module = "androidx.camera:camera-camera2", version.ref = "cameraVersion" }
+camera-lifecycle = { module = "androidx.camera:camera-lifecycle", version.ref = "cameraVersion" }
+camera-view = { module = "androidx.camera:camera-view", version.ref = "cameraVersion" }
+androidx-camera-core = { module = "androidx.camera:camera-core", version.ref = "cameraCore" }
+androidx-camera-camera2 = { module = "androidx.camera:camera-camera2", version.ref = "cameraCore" }
+androidx-camera-lifecycle = { module = "androidx.camera:camera-lifecycle", version.ref = "cameraCore" }
+androidx-camera-video = { module = "androidx.camera:camera-video", version.ref = "cameraCore" }
+androidx-camera-view = { module = "androidx.camera:camera-view", version.ref = "cameraCore" }
+
+# Compose
+androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "composeVersion" }
+androidx-foundation = { module = "androidx.compose.foundation:foundation", version.ref = "composeVersion" }
+androidx-material = { module = "androidx.compose.material:material", version.ref = "composeVersion" }
+androidx-ui = { module = "androidx.compose.ui:ui", version.ref = "composeVersion" }
+androidx-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview", version.ref = "composeVersion" }
+
+# Google & ML Kit
+play-services-auth = { module = "com.google.android.gms:play-services-auth", version.ref = "playServicesAuth" }
+barcode-scanning = { module = "com.google.mlkit:barcode-scanning", version.ref = "barcodeScanning" }
+play-services-mlkit-barcode-scanning = { module = "com.google.android.gms:play-services-mlkit-barcode-scanning", version.ref = "playServicesMlkitBarcodeScanning" }
+
+# Network & Data
+retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
+converter-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "retrofit" }
+retrofit2-kotlin-coroutines-adapter = { module = "com.jakewharton.retrofit:retrofit2-kotlin-coroutines-adapter", version.ref = "retrofit2KotlinCoroutinesAdapter" }
+okhttp = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }
+logging-interceptor = { module = "com.squareup.okhttp3:logging-interceptor", version.ref = "okhttp" }
+eventbus = { module = "org.greenrobot:eventbus", version.ref = "eventbus" }
+kotlin-csv-jvm = { module = "com.github.doyaaaaaken:kotlin-csv-jvm", version.ref = "kotlinCsvJvm" }
+
+# Image & Video
+glide = { module = "com.github.bumptech.glide:glide", version.ref = "glide" }
+compiler = { module = "com.github.bumptech.glide:compiler", version.ref = "glide" }
+glide-transformations = { module = "jp.wasabeef:glide-transformations", version.ref = "glideTransformations" }
+fresco = { module = "com.facebook.fresco:fresco", version.ref = "fresco" }
+carguo-gsyvideoplayer = { module = "io.github.carguo:gsyvideoplayer", version.ref = "gsyvideoplayerVersion" }
+compress = { module = "io.github.lucksiege:compress", version.ref = "compress" }
+
+# UI Components
+banner = { module = "io.github.youth5201314:banner", version.ref = "banner" }
+xpopup = { module = "com.github.li-xiaojun:XPopup", version.ref = "xpopup" }
+circleprogress = { module = "com.github.lzyzsd:circleprogress", version.ref = "circleprogress" }
+blurview = { module = "com.github.Dimezis:BlurView", version.ref = "blurview" }
+flexbox = { module = "com.google.android.flexbox:flexbox", version.ref = "flexbox" }
+floatingx = { module = "io.github.petterpx:floatingx", version.ref = "floatingx" }
+expandabletextview = { module = "com.github.MZCretin:ExpandableTextView", version.ref = "expandabletextview" }
+baserecyclerviewadapterhelper4 = { module = "io.github.cymchad:BaseRecyclerViewAdapterHelper4", version.ref = "baserecyclerviewadapterhelper4" }
+ultimatebarx = { module = "com.gitee.zackratos:UltimateBarX", version.ref = "ultimatebarx" }
+
+# Refresh Layout
+refresh-layout-kernel = { module = "io.github.scwang90:refresh-layout-kernel", version.ref = "refreshLayoutKernel" }
+refresh-header-material = { module = "io.github.scwang90:refresh-header-material", version.ref = "refreshHeaderMaterial" }
+refresh-footer-classics = { module = "io.github.scwang90:refresh-footer-classics", version.ref = "refreshFooterClassics" }
+
+# Utilities
+utilcodex = { module = "com.blankj:utilcodex", version.ref = "utilcodex" }
+xxpermissions = { module = "com.github.getActivity:XXPermissions", version.ref = "xxpermissions" }
+androidautosize = { module = "com.github.JessYanCoding:AndroidAutoSize", version.ref = "androidautosize" }
+zing = { module = "com.github.bingoogolapple.BGAQRCode-Android:zxing", version.ref = "zxingV" }
+agentweb-core = { module = "io.github.justson:agentweb-core", version.ref = "agentwebCore" }
+
+# Test
+junit = { group = "junit", name = "junit", version.ref = "junit" }
+androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
+androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
+androidx-activity-ktx = { group = "androidx.activity", name = "activity-ktx", version.ref = "activityKtx" }
+
+[bundles]
+jetpack = [
+    "androidx-navigation-dynamic-features-fragment",
+    "androidx-navigation-ui",
+    "androidx-navigation-fragment",
+    "androidx-work-runtime-ktx",
+    "datastore-preferences",
+    "room-ktx",
+    "room-runtime",
+    "startup",
+    "camera-core",
+    "camera-camera2",
+    "camera-lifecycle",
+    "camera-view",
+    "androidx-camera-core",
+]
+lifecycle = [
+    "androidx-lifecycle-common-java8",
+    "androidx-lifecycle-extensions",
+    "androidx-lifecycle-runtime",
+    "androidx-lifecycle-runtime-ktx",
+    "androidx-lifecycle-viewmodel-ktx",
+    "androidx-lifecycle-livedata-ktx"
+]
+compose = [
+    "androidx-activity-compose",
+    "androidx-foundation",
+    "androidx-material",
+    "androidx-ui-tooling-preview",
+    "androidx-ui"
+]
+
+[plugins]
+android-application = { id = "com.android.application", version.ref = "agp" }
+kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+android-library = { id = "com.android.library", version.ref = "agp" }
+compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+mob-sdk = { id = "com.mob.sdk", version.ref = "mobSdk" }
+google-services = { id = "com.google.gms.google-services", version.ref = "googleServices" }

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="s_device_no_connect">设备未连接</string>
+    <string name="s_response_timeout">响应超时</string>
+    <string name="s_service_config_not_found">未找到服务配置</string>
+    <string name="s_bluetooth_permission_required">需要蓝牙权限</string>
+    <string name="s_send_command_failed">发送指令失败</string>
+    <string name="s_other_error">其他错误</string>
+</resources>
