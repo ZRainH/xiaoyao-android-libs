@@ -746,6 +746,4 @@ connection.setCharacteristicIndication(characteristic, true)
 - 扫描队列是否还有待处理设备（`autoConnectStates` 中该地址的状态）
 - 该设备在系统蓝牙层是否真的有广播（可用系统 BLE 扫描工具交叉验证）
 
----
 
-如果你愿意，我可以把“日志最少集合”进一步落到你的项目：告诉我你当前设备协议是怎么构造 `data`/`messageId` 的（比如序列号字段 `seqId` 怎么生成），我可以给你一份可直接粘贴的打印/校验模板。
