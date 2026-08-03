@@ -25,3 +25,4 @@ dependencyResolutionManagement {
 rootProject.name = "Demo"
 include(":app")
 include(":bluetooth")
+include(":pay")

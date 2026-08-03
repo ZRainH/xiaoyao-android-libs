@@ -1,0 +1,29 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
+    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
+
+    <!-- Android 11+ 可见性：探测是否安装微信 -->
+    <queries>
+        <package android:name="com.tencent.mm"/>
+    </queries>
+
+    <application>
+        <activity
+            android:name=".union.UnionPayActivity"
+            android:exported="false"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar"/>
+
+        <!--
+          ${applicationId} 在合并到宿主 Manifest 时会替换为宿主包名，
+          配合 wxentry.gradle 生成的 {applicationId}.wxapi.WXPayEntryActivity。
+        -->
+        <activity
+            android:name="${applicationId}.wxapi.WXPayEntryActivity"
+            android:exported="true"
+            android:launchMode="singleTop"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar"/>
+    </application>
+</manifest>
