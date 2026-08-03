@@ -74,7 +74,7 @@ mavenPublishing {
         name.set("Xiaoyao Pay Utils")
         description.set("Android payment helper for Alipay, WeChat Pay and UnionPay")
         inceptionYear.set("2026")
-        url.set("https://github.com/ZRainH/AndroidBluetooth")
+        url.set("https://github.com/ZRainH/xiaoyao-android-libs")
         licenses {
             license {
                 name.set("The Apache License, Version 2.0")
@@ -90,9 +90,9 @@ mavenPublishing {
             }
         }
         scm {
-            url.set("https://github.com/ZRainH/AndroidBluetooth")
-            connection.set("scm:git:git://github.com/ZRainH/AndroidBluetooth.git")
-            developerConnection.set("scm:git:ssh://git@github.com/ZRainH/AndroidBluetooth.git")
+            url.set("https://github.com/ZRainH/xiaoyao-android-libs")
+            connection.set("scm:git:git://github.com/ZRainH/xiaoyao-android-libs.git")
+            developerConnection.set("scm:git:ssh://git@github.com/ZRainH/xiaoyao-android-libs.git")
         }
     }
 }

@@ -4,7 +4,7 @@
 gpr.user=你的GitHub用户名
 # gpr.key=ghp_xxx
 gpr.repo.owner=ZRainH
-gpr.repo.name=AndroidBluetooth
+gpr.repo.name=xiaoyao-android-libs
 
 # —— Maven Central（Central Portal User Token）——
 # 在 https://central.sonatype.com/ 生成 User Token
