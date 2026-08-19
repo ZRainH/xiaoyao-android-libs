@@ -31,10 +31,12 @@ android {
 dependencies {
     implementation(libs.xiaoyao.bluetooth)
     implementation(project(":pay"))
+    implementation(project(":serial"))
     implementation(libs.androidx.activity.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.constraintlayout)
     implementation(libs.androidx.core.ktx)
+    implementation(libs.kotlinx.coroutines.android)
     implementation(libs.material)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.espresso.core)

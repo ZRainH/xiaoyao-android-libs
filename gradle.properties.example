@@ -8,6 +8,8 @@ gpr.repo.name=xiaoyao-android-libs
 
 # —— Maven Central（Central Portal User Token）——
 # 在 https://central.sonatype.com/ 生成 User Token
+mavenCentralPublishing=true
+mavenCentralAutomaticPublishing=true
 mavenCentralUsername=你的Token用户名
 mavenCentralPassword=你的Token密码
 

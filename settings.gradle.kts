@@ -19,6 +19,7 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
+        maven { url = uri("https://jitpack.io") }
     }
 }
 
@@ -26,3 +27,5 @@ rootProject.name = "Demo"
 include(":app")
 include(":bluetooth")
 include(":pay")
+include(":serial")
+include(":modbus")
