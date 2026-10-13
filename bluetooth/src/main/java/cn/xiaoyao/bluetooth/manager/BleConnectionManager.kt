@@ -57,7 +57,11 @@ class BleConnectionManager private constructor(private val context: Context) {
     private val deviceLocks = ConcurrentHashMap<String, Mutex>()
 
     // 数据流管理
-    private val _activePushes = MutableSharedFlow<DeviceMessage>(extraBufferCapacity = 256)
+    // 使用 BufferOverflow.DROP_OLDEST，当缓冲区满时丢弃最老的数据，绝对不能阻塞底层协程
+    private val _activePushes = MutableSharedFlow<DeviceMessage>(
+        extraBufferCapacity = 256,
+        onBufferOverflow = kotlinx.coroutines.channels.BufferOverflow.DROP_OLDEST
+    )
     val activePushes: SharedFlow<DeviceMessage> = _activePushes
 
     // 连接状态流
@@ -119,6 +123,7 @@ class BleConnectionManager private constructor(private val context: Context) {
     /**
      * 监控单个连接的消息
      */
+    @SuppressLint("MissingPermission")
     private suspend fun monitorConnectionMessages(connection: BleConnection) {
         val deviceAddress = connection.bluetoothDevice.address
 
@@ -187,15 +192,11 @@ class BleConnectionManager private constructor(private val context: Context) {
     /**
      * 发送主动推送消息（带缓冲和背压处理）
      */
-    private suspend fun emitActivePush(message: DeviceMessage) {
+    private fun emitActivePush(message: DeviceMessage) {
+        // 由于已经修改了 MutableSharedFlow 的策略为 DROP_OLDEST
+        // tryEmit 不会阻塞，且缓冲区满时会自动丢弃旧数据，保障收集侧永不挂起
         if (!_activePushes.tryEmit(message)) {
-            // 如果缓冲区满，等待或丢弃旧消息（根据需求调整策略）
-            try {
-                Log.e(TAG, "emitActivePush: 推送")
-                _activePushes.emit(message)
-            } catch (e: Exception) {
-                Log.w(TAG, "主动推送消息丢弃: ${message.deviceAddress}")
-            }
+            Log.w(TAG, "主动推送消息缓冲区满，发生旧数据丢弃: ${message.deviceAddress}")
         }
     }
 
@@ -468,6 +469,7 @@ class BleConnectionManager private constructor(private val context: Context) {
             .build()
 
         try {
+            @SuppressLint("MissingPermission")
             scanner.startScan(filters, settings, callback)
 
             // 等待所有设备扫描完成或超时
@@ -488,6 +490,7 @@ class BleConnectionManager private constructor(private val context: Context) {
 
             scanJobs.awaitAll()
         } finally {
+            @SuppressLint("MissingPermission")
             scanner.stopScan(callback)
         }
 
@@ -499,6 +502,7 @@ class BleConnectionManager private constructor(private val context: Context) {
     /**
      * 向单个设备发送无响应写入（WRITE_TYPE_NO_RESPONSE）
      */
+    @SuppressLint("MissingPermission")
     fun sendCommandSyncNoResponse(
         deviceAddress: String,
         characteristicUuid: UUID,
@@ -563,8 +567,9 @@ class BleConnectionManager private constructor(private val context: Context) {
 
             val messageId = serviceProfile.serviceInterpreter.generateMessageId(data)
 
-            // 创建响应通道 (使用唯一的 responseKey 避免跨设备冲突)
-            val responseChannel = Channel<DeviceMessage>(Channel.RENDEZVOUS)
+            // 注册等待响应
+            // 【修复响应超时竞争异常】：改用带单元素缓冲区的 Channel，防止一发一收由于时序和抛弃导致的 ClosedSendChannelException
+            val responseChannel = Channel<DeviceMessage>(capacity = 1)
             val responseKey = "${deviceAddress}_$messageId"
           //  Log.e(TAG, "messageId: $messageId, responseKey: $responseKey")
 
@@ -747,6 +752,7 @@ class BleConnectionManager private constructor(private val context: Context) {
         deviceLocks.clear()
     }
 
+    @SuppressLint("MissingPermission")
     fun requestConnectionPriority(deviceAddress: String, priority: Int): Boolean {
         return getConnection(deviceAddress)?.requestConnectionPriority(priority) ?: false
     }

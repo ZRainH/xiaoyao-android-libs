@@ -175,8 +175,10 @@ class BleConnection(
         return withContext(Dispatchers.Main) {
 
             suspendCancellableCoroutine { continuation ->
-                isConnectionResolved.set(false)
+                // 【修复并发可见性】：先赋值 continuation，然后再利用 Volatile / Atomic 设置状态屏障，
+                // 确保底层回调在读取 isConnectionResolved 成功后，必定能看到 connectResultContinuation 的最新值
                 connectResultContinuation = continuation
+                isConnectionResolved.set(false)
 
                 // 清理旧资源
                 cleanupGattResources()
@@ -244,15 +246,18 @@ class BleConnection(
             gatt.disconnect()
 
             // 绝对不能立刻 close()！必须给底层硬件处理断开指令的缓冲时间。
-            // 使用 GlobalScope 防止随组件销毁而被取消，从而导致底层 GATT 泄露
-            @OptIn(DelicateCoroutinesApi::class)
-            GlobalScope.launch(Dispatchers.IO) {
-                delay(800) // 必须延迟 600ms ~ 1000ms
-                try {
-                    gatt.close()
-                    Log.d(TAG, "GATT 彻底释放并关闭 -> ${gatt.device.address}")
-                } catch (e: Exception) {
-                    Log.e(TAG, "Error closing GATT", e)
+            // 【修复缓慢关闭导致的泄漏隐患】不再使用 GlobalScope
+            // 在 BleConnection 的专属作用域中启动清理，如果 BleConnection 被回收，协程会跟随取消。
+            // 同时使用了 NonCancellable 保证即使 connectionScope 被取消，也能确保 gatt.close() 被执行完。
+            coroutineScope.launch(Dispatchers.IO) {
+                withContext(NonCancellable) {
+                    delay(800) // 必须延迟 600ms ~ 1000ms
+                    try {
+                        gatt.close()
+                        Log.d(TAG, "GATT 彻底释放并关闭 -> ${gatt.device.address}")
+                    } catch (e: Exception) {
+                        Log.e(TAG, "Error closing GATT", e)
+                    }
                 }
             }
         } catch (e: Exception) {

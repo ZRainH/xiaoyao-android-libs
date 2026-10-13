@@ -477,22 +477,24 @@ class BleAutoConnectManager(
             stopAutoConnectScan()
             delay(500) // 让底层硬件从高频扫描状态中平息下来
 
-            for (device in devicesToConnect) {
-                // 中途如果开关关了，或者前台突然要插手，直接终止排队！
-                if (!isAutoConnectEnabled || isGloballyPausedByManualOperation) break
+            try {
+                for (device in devicesToConnect) {
+                    // 中途如果开关关了，或者前台突然要插手，直接终止排队！
+                    if (!isAutoConnectEnabled || isGloballyPausedByManualOperation) break
 
-                val mutex = connectionLocks.getOrPut(device.address) { Mutex() }
-                mutex.withLock {
-                    executeConnection(device)
+                    val mutex = connectionLocks.getOrPut(device.address) { Mutex() }
+                    mutex.withLock {
+                        executeConnection(device)
+                    }
+
+                    // 2. 缓冲期：设备连接完毕强制休息 1.5 秒，避免连续 connect 报错 133
+                    delay(1500)
                 }
-
-                // 2. 缓冲期：设备连接完毕强制休息 1.5 秒，避免连续 connect 报错 133
-                delay(1500)
+            } finally {
+                // 3. 释放锁。无论发生 CancellationException 还是未知异常，必须恢复状态！
+                isBatchConnecting = false
+                updateScannerState() // 若处于 isGloballyPausedByManualOperation，内部会被继续拦截，非常安全
             }
-
-            // 3. 释放锁
-            isBatchConnecting = false
-            updateScannerState() // 若处于 isGloballyPausedByManualOperation，内部会被继续拦截，非常安全
         }
     }
 
