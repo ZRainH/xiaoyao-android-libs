@@ -427,6 +427,29 @@ class BleConnectionManager private constructor(private val context: Context) {
             ?.bluetoothLeScanner
 
     /**
+     * 获取通用扫描器实例
+     */
+    val scanner: cn.xiaoyao.bluetooth.scanner.BleScanner
+        get() = cn.xiaoyao.bluetooth.scanner.BleScanner.getInstance(context)
+
+    /**
+     * 开启通用蓝牙设备扫描（按 Flow 实时推送去重设备列表，按 RSSI 排序）
+     */
+    fun startScanFlow(
+        timeoutMillis: Long = 10000L,
+        serviceUuids: List<UUID>? = null,
+        nameFilter: String? = null,
+        macFilter: List<String>? = null
+    ): Flow<List<cn.xiaoyao.bluetooth.model.BleScanResult>> {
+        return scanner.startScanFlow(
+            timeoutMillis = timeoutMillis,
+            serviceUuids = serviceUuids,
+            nameFilter = nameFilter,
+            macFilter = macFilter
+        )
+    }
+
+    /**
      * 批量扫描设备
      */
     suspend fun scanDevices(

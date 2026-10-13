@@ -2,7 +2,7 @@
 
 多设备 BLE 库，支持连接管理、扫连自动重连、指令收发与可插拔协议解析。
 
-- **版本**：`1.0.0`
+- **版本**：`1.0.2`
 - **坐标**：`io.github.zrainh:bluetooth`
 - **包名**：`cn.xiaoyao.bluetooth`
 
@@ -12,7 +12,7 @@
 
 ```kotlin
 dependencies {
-    implementation("io.github.zrainh:bluetooth:1.0.0")
+    implementation("io.github.zrainh:bluetooth:1.0.2")
 }
 ```
 
@@ -41,6 +41,34 @@ implementation(project(":bluetooth"))
 ```kotlin
 val connectionManager = BleConnectionManager.getInstance(context)
 val autoConnectManager = BleAutoConnectManager.create(context)
+val scanner = BleScanner.getInstance(context)
+```
+
+### 通用设备扫描 (搜索周围设备列表)
+
+使用 `BleScanner` 或 `connectionManager.startScanFlow()` 实时搜索周边 BLE 设备（按 RSSI 从强到弱排序并自动去重）：
+
+```kotlin
+lifecycleScope.launch {
+    // 监听扫描状态（便于 UI 展示“扫描中...”加载动画）
+    launch {
+        scanner.isScanning.collect { isScanning ->
+            // UI 加载指示器
+        }
+    }
+
+    // 开启扫描 Flow（支持设置超时、名称过滤、UUID过滤）
+    connectionManager.startScanFlow(
+        timeoutMillis = 10000L,        // 10秒后自动停止，<= 0 为持续扫描
+        nameFilter = "MyDevice",       // 可选：过滤名称包含 MyDevice 的设备
+        serviceUuids = listOf(uuid)    // 可选：过滤服务 UUID
+    ).collect { deviceList ->
+        // deviceList: List<BleScanResult>
+        deviceList.forEach { item ->
+            Log.d("Scan", "找到设备: ${item.name} (${item.address}), RSSI: ${item.rssi}")
+        }
+    }
+}
 ```
 
 ### 配置服务与特征

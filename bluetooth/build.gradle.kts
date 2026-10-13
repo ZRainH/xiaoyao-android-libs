@@ -8,7 +8,7 @@ plugins {
     signing
 }
 
-val bluetoothVersion = "1.0.1"
+val bluetoothVersion = "1.0.2"
 
 fun resolveConfig(propName: String, vararg envNames: String): String? {
     envNames.forEach { env ->
