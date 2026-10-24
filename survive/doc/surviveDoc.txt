@@ -1,0 +1,64 @@
+在 Android 系统中，当 App 退到后台时，系统为了节省电量和内存，会通过 Doze 模式（休眠）和 App Standby（应用待机）机制严格限制后台网络、蓝牙和 CPU 活动，甚至直接回收进程。
+
+要实现后台长时间稳定的蓝牙通信，核心思路是：提升应用系统优先级、申请豁免电池优化限制，并配合蓝牙自身的自动重连机制。
+
+以下是实现该目标的完整技术方案，按重要程度分条列出：
+
+1. 使用前台服务 (Foreground Service) —— 核心基础
+这是维持后台长时间运行的最重要手段。前台服务会在系统状态栏显示一个不可消除的通知，明确告知用户 App 正在运行，从而极大地降低被系统 OOM (Out Of Memory) killer 回收的概率。
+
+实现方式： 创建一个 Service，在 onCreate 或 onStartCommand 中调用 startForeground(ID, Notification)。将蓝牙的扫描、连接和数据交互逻辑全部放在这个 Service 中执行。
+
+权限适配（Android 14+）： 从 Android 14 开始，必须为前台服务声明具体的类型。对于蓝牙设备通信，需要在 AndroidManifest.xml 中声明 connectedDevice 类型：
+
+XML
+<uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+<uses-permission android:name="android.permission.FOREGROUND_SERVICE_CONNECTED_DEVICE" />
+<service android:name=".BluetoothService" android:foregroundServiceType="connectedDevice" />
+2. 申请忽略电池优化 (Ignore Battery Optimizations)
+即使有前台服务，Android 的 Doze 模式仍可能在屏幕关闭一段时间后暂停 CPU 和网络/蓝牙活动。你需要引导用户将 App 加入电池优化的白名单。
+
+所需权限：
+
+XML
+<uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
+代码实现： 检查当前是否已被豁免，如果没有，则跳转到系统设置页面引导用户开启。
+
+Java
+PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
+if (!pm.isIgnoringBatteryOptimizations(getPackageName())) {
+    Intent intent = new Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS);
+    intent.setData(Uri.parse("package:" + getPackageName()));
+    startActivity(intent);
+}
+3. 利用配套设备管理器 (Companion Device Manager)
+如果你的 App 是专门配合某个蓝牙硬件（如智能手表、手环、医疗设备）使用的，Android 8.0 引入了 CompanionDeviceManager。
+
+优势： 通过该 API 与设备绑定后，App 可以申请 REQUEST_COMPANION_RUN_IN_BACKGROUND 权限。这不仅能让 App 在后台被唤醒以响应蓝牙事件，还能在不弹窗的情况下直接进行蓝牙扫描，是官方推荐的智能硬件保活方案。
+
+4. 优化蓝牙自身的连接机制
+系统级别的保活只能尽量防止进程被杀，但蓝牙本身的物理链路仍可能因为距离、干扰等断开。必须在代码层面做好异常恢复。
+
+开启自动连接： 在 BLE（低功耗蓝牙）中调用 connectGatt() 时，将 autoConnect 参数设置为 true。这样当设备断开且再次进入范围时，底层蓝牙栈会自动尝试重新连接，而无需频繁唤醒主应用进程去扫描。
+
+Java
+bluetoothDevice.connectGatt(context, true, gattCallback); // 第二个参数为 autoConnect
+完善重连逻辑： 在 BluetoothGattCallback 的 onConnectionStateChange 中监听断开事件（STATE_DISCONNECTED）。一旦断开，应启动一个退避算法（如 2秒、4秒、8秒）进行主动重连尝试，避免无限高频重连耗尽资源。
+
+5. 持有部分唤醒锁 (Partial WakeLock) —— 按需使用
+如果你的 App 在后台不仅需要接收蓝牙数据，还需要对接收到的数据进行复杂的 CPU 计算或频繁的本地 I/O 写入，即使处于前台服务，CPU 也可能在息屏后休眠。
+
+解决办法： 申请 android.permission.WAKE_LOCK 权限，并获取 PARTIAL_WAKE_LOCK。
+
+注意： 这会显著增加耗电量，极易引起应用市场的耗电警告。通常仅在处理紧急且持续的数据流（如固件 OTA 升级或实时医疗数据采集）时短暂使用，用完必须立即 release()。
+
+6. 应对国产手机厂商的定制系统（“厂商保活”）
+华为、小米、OPPO、vivo 等厂商对后台管控比原生 Android 更加严苛。纯靠代码有时无法完全防止被杀。
+
+引导用户手动设置： 这是目前商业 App 普遍采用的做法。在 App 内提供一个“后台运行教程”页面，图文引导用户进行以下操作：
+
+在多任务/最近任务列表中，将该 App “加锁”（下拉或点击锁定图标）。
+
+进入手机管家或设置页，允许该 App “自启动”和“关联启动”。
+
+在电池设置中，将该 App 的后台耗电行为设置为“无限制”。

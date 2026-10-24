@@ -1,3 +1,19 @@
 <resources>
     <string name="app_name">survive</string>
+    <string name="status_running">状态：保活运行中</string>
+    <string name="status_stopped">状态：已停止</string>
+    <string name="vendor_fmt">厂商：%1$s</string>
+    <string name="battery_yes">电池白名单：是</string>
+    <string name="battery_no">电池白名单：否</string>
+    <string name="btn_start">启动前台保活</string>
+    <string name="btn_stop">停止保活</string>
+    <string name="btn_notify_permission">申请通知权限</string>
+    <string name="btn_battery">申请忽略电池优化</string>
+    <string name="section_vendor">厂商后台设置</string>
+    <string name="btn_auto_start">打开自启动管理</string>
+    <string name="btn_battery_unrestricted">打开电池无限制设置</string>
+    <string name="btn_app_details">打开应用详情（多任务加锁等）</string>
+    <string name="hint">提示：国产机请在最近任务中对本应用「加锁」，并允许自启动。蓝牙重连请在 DemoWorker 里自行接入，库不包含协议逻辑。</string>
+    <string name="toast_notify_granted">通知权限已授予</string>
+    <string name="toast_notify_denied">未授予通知权限，前台通知可能不可见</string>
 </resources>

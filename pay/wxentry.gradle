@@ -45,7 +45,8 @@ public class WXPayEntryActivity extends com.xiaoyao.pay.wechat.WXPayEntryActivit
 
     tasks.configureEach { task ->
         if (task.name == "compile${capitalize(variant.name)}Kotlin"
-                || task.name == "compile${capitalize(variant.name)}JavaWithJavac") {
+                || task.name == "compile${capitalize(variant.name)}JavaWithJavac"
+                || task.name == "ksp${capitalize(variant.name)}Kotlin") {
             task.dependsOn(generateTask)
         }
     }

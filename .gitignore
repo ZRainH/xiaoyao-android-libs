@@ -16,3 +16,8 @@ PUBLISH.md
 *.aab
 *.keystore
 .DS_Store
+*.log
+*.zip
+crash*.txt
+runtime.txt
+.cursor/

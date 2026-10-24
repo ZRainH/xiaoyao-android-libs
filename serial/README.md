@@ -1,7 +1,5 @@
 # Serial 串口库
 
-Android 原生串口会话库，基于 [android-serialport](https://github.com/licheedev/Android-SerialPort-API)。
-
 | 项 | 值 |
 |----|-----|
 | 版本 | `1.2.0` |
